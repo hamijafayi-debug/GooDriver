@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-repo="${SKIRK_REPO:-ShahabSL/Skirk}"
+repo="${SKIRK_REPO:-hamijafayi-debug/GooDriver}"
 version="${SKIRK_VERSION:-latest}"
 install_dir="${SKIRK_INSTALL_DIR:-$HOME/.local/bin}"
 asset_base="${SKIRK_ASSET_BASE:-}"
@@ -138,7 +138,7 @@ uninstall_skirk() {
 install_from_release() {
   platform="$1"
   tmp="$2"
-  asset="skirk-$platform.tar.gz"
+  asset="goodriver-$platform.tar.gz"
   if [ -n "$asset_base" ]; then
     url="$asset_base/$asset"
   elif [ "$version" = "latest" ]; then
@@ -283,7 +283,9 @@ install_from_source() {
   build_out="$tmp/skirk-built"
   (
     cd "$tmp/source"
-    go build -trimpath -ldflags "-s -w -X main.version=$version" -o "$build_out" ./cmd/skirk
+    SKIRK_OAUTH_CLIENT_ID="${SKIRK_OAUTH_CLIENT_ID:-}" \
+      SKIRK_OAUTH_CLIENT_SECRET="${SKIRK_OAUTH_CLIENT_SECRET:-}" \
+      go build -trimpath -ldflags "-s -w -X main.version=$version" -o "$build_out" ./cmd/skirk
   )
   install_tmp="$install_dir/.skirk.tmp.$$"
   cp "$build_out" "$install_tmp"
@@ -414,8 +416,8 @@ main() {
     *) echo "Current shell may not find skirk yet. Run: export PATH=\"$install_dir:\$PATH\"" ;;
   esac
   echo
-  echo "Next: run '$install_dir/skirk' for guided setup, including easy or personal OAuth."
-  echo "Direct setup is also available: '$install_dir/skirk setup init --out skirk-kit --reset-google-login'."
+  echo "Next: run '$install_dir/skirk setup init --out skirk-kit --reset-google-login' to set up the exit server."
+  echo "Make sure SKIRK_OAUTH_CLIENT_ID and SKIRK_OAUTH_CLIENT_SECRET are set before setup."
 
   run_server_setup
 }
